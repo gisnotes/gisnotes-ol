@@ -63,3 +63,50 @@ onUnmounted(() => {
 然后接下来我们将打印一下页面从被打开到关闭执行的生命周期情况：打开页面-》切换到别的标签页-》切换回当前页面-》关闭页面，打印的日志如下图所示：
 
 ![页面生命周期日志](.assets/images/PixPin_2026-04-30_23-57-47.png)
+
+点击浏览器的刷新按钮，打印的日志如下图所示：
+![刷新按钮日志](.assets/images/PixPin_2026-05-01_00-20-30.png)
+
+但是，右键单击标签并点击刷新菜单，或者**直接点击标签栏最右侧的刷新按钮**，打印的日志如下图所示：
+
+![右键刷新日志](.assets/images/PixPin_2026-05-01_00-23-16.png)
+
+### 分析原因
+
+我们来分析一下，在`AppMain.vue`中，你的页面被`<keep-alive>`包裹：
+
+```vue
+<keep-alive :include="tagsViewStore.cachedViews">
+  <component v-if="!route.meta.link" :is="Component" :key="route.path"/>
+</keep-alive>
+```
+
+AutoProjection 组件的 meta.noCache 是默认 false ，所以它会被加入 cachedViews 并被 keep-alive 缓存。
+
+```js
+addCachedView(view) {
+  if (this.cachedViews.includes(view.name)) return
+  if (!view.meta.noCache) {
+    this.cachedViews.push(view.name)
+  }
+}
+```
+
+总结一下就是，缓存页面生命周期执行顺序如下：
+
+| 场景                   | 生命周期执行顺序                                        |
+| ---------------------- | ------------------------------------------------------- |
+| 首次进入               | `setup` → `onBeforeMount` → `onMounted` → `onActivated` |
+| 再次进入（缓存命中）   | `onActivated` （不再触发 `onMounted`）                  |
+| 离开                   | `onDeactivated`                                         |
+| 销毁（从缓存中移除后） | `onDeactivated` → `onBeforeUnmount` → `onUnmounted`     |
+
+### 代码层面的追踪路径
+
+整个流程的调用链是：
+
+- permission.js:L59-L62 — 路由守卫中调用 generateRoutes() 注册动态路由
+- TagsView/index.vue:L102 — 监听 route 变化，调用 addTags()
+- tagsView\.js:L40-L42 — addCachedView() 将 "AutoProjection" 推入 cachedViews 数组
+- AppMain.vue:L4 — <keep-alive> 的 :include 匹配到组件名，触发缓存
+- 组件首次挂载 → onMounted 执行 → Vue 内部完成缓存 → onActivated 执行
