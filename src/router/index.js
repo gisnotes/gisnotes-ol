@@ -78,28 +78,6 @@ export const constantRoutes = [
   },
 ];
 
-/**
- * 本地菜单定义结构
- */
-export const LOCAL_ROUTES = [
-  {
-    name: "Projection",
-    path: "/projection",
-    hidden: false,
-    redirect: "noRedirect",
-    component: "Layout",
-    meta: { title: "投影", icon: "projection", roles: ["admin"] },
-    children: [
-      // {
-      //   path: "build",
-      //   component: "tool/build/index",
-      //   hidden: false,
-      //   meta: { title: "表单构建", icon: "build", roles: ["admin"] },
-      // },
-    ],
-  },
-];
-
 // 动态路由，基于用户权限动态去加载（已注释，当前使用本地静态路由）
 // export const dynamicRoutes = [...]
 

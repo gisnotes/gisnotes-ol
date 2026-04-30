@@ -2,7 +2,7 @@ import { constantRoutes } from "@/router";
 import Layout from "@/layout/index";
 import ParentView from "@/components/ParentView";
 import InnerLink from "@/layout/components/InnerLink";
-import { LOCAL_ROUTES } from "@/router/index.js";
+import { LOCAL_ROUTES } from "@/@menu/index.js";
 
 const modules = import.meta.glob("./../../views/**/*.vue");
 // 注释掉默认的定义的菜单，然后统一从router/index.js中引入
