@@ -1,3 +1,5 @@
+> **声明**：本项目基于 [RuoYi-Vue3](https://github.com/yangzongzhuan/RuoYi-Vue3) 框架修改而来，用于学习和研究 Openlayers 官方示例或源代码之用。
+
 ## 项目下载及初始化
 
 > 注：推荐使用 node 的 24 版本来安装或运行项目，这里我使用的 node 版本是`24.12.0`。
