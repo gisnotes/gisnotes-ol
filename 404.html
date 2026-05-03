@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 - Redirecting</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f7fa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .container {
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #409eff; font-size: 72px; margin: 0; }
+    p { color: #606266; font-size: 16px; margin: 12px 0 24px; }
+    .loading { color: #909399; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>404</h1>
+    <p>页面跳转中，请稍候...</p>
+    <div class="loading">Loading...</div>
+  </div>
+  <script>
+    (function () {
+      var segmentCount = 1;
+      var l = window.location;
+      // 去掉 base path（对应 /gisnotes-ol/）前缀，获取真实路由路径
+      var path = l.pathname.split('/').slice(segmentCount + 1).join('/');
+      var hash = l.hash;
+      var search = l.search;
+      // 组装最终 URL，跳到 index.html 带上当前完整路径信息
+      var target = l.protocol + '//' + l.host + l.pathname.split('/').slice(0, segmentCount + 1).join('/') + '/' + '?' + '__spa_path=' + encodeURIComponent(path + hash + search);
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>
