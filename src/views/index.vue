@@ -6,6 +6,7 @@
 import "jsmind/style/jsmind.css";
 import jsMind from "jsmind";
 import { useRouter } from "vue-router";
+import { ElMessageBox, ElMessage } from "element-plus";
 
 const router = useRouter();
 const jsmindContainerRef = ref(null);
@@ -130,6 +131,20 @@ const mind = {
 
 let jm = null;
 
+function openExternalLink(url) {
+  ElMessageBox.confirm("是否打开外部链接？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "info",
+  })
+    .then(() => {
+      window.open(url, "_blank");
+    })
+    .catch(() => {
+      ElMessage.warning("取消打开外部链接");
+    });
+}
+
 onMounted(() => {
   const JsMind = jsMind.default || jsMind;
   const options = {
@@ -159,16 +174,10 @@ onMounted(() => {
         router.push("/projection/autoProjection");
       },
       "projection1-1": () => {
-        window.open(
-          "https://mp.weixin.qq.com/s/yl2sYCgm0MtfqrtKorWdAA",
-          "_blank",
-        );
+        openExternalLink("https://mp.weixin.qq.com/s/yl2sYCgm0MtfqrtKorWdAA");
       },
       "projection1-2": () => {
-        window.open(
-          "https://mp.weixin.qq.com/s/HesBAG6Rk97YvvcpCcX_jA",
-          "_blank",
-        );
+        openExternalLink("https://mp.weixin.qq.com/s/HesBAG6Rk97YvvcpCcX_jA");
       },
     };
     if (handlers[id]) {
