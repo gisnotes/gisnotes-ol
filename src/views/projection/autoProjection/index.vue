@@ -1,14 +1,19 @@
 <template>
-  <div
-    class="auto-projection"
-    ref="mapDivRef"
-    v-loading="isLoading"
-    element-loading-background="rgba(122, 122, 122, 0.8)"
-    element-loading-text="地图加载中..."
-  ></div>
+  <demo-box :codeBlocks="myCodeList">
+    <div
+      class="auto-projection"
+      ref="mapDivRef"
+      v-loading="isLoading"
+      element-loading-background="rgba(122, 122, 122, 0.8)"
+      element-loading-text="地图加载中..."
+    ></div>
+  </demo-box>
 </template>
 
 <script setup name="AutoProjection">
+import DemoBox from "@/components/DemoBox/index.vue";
+import IndexSourceCode from "./index.vue?raw";
+
 import Map from "ol/Map.js";
 import { unByKey } from "ol/Observable.js";
 import TileLayer from "ol/layer/WebGLTile.js";
@@ -19,6 +24,14 @@ import XYZ from "ol/source/XYZ.js";
 import proj4 from "proj4";
 
 import { MAPTILER_API_KEY } from "@/constants";
+
+const myCodeList = ref([
+  {
+    fileName: "@/views/projection/autoProjection/index.vue",
+    rawCode: IndexSourceCode,
+    language: "html",
+  },
+]);
 
 const mapDivRef = ref(null);
 let map = null;
@@ -98,6 +111,12 @@ const detachListeners = () => {
 };
 
 onMounted(() => {
+  setTimeout(() => {
+    initMap();
+  }, 0);
+});
+
+function initMap() {
   map = new Map({
     target: mapDivRef.value,
     layers: [
@@ -106,7 +125,7 @@ onMounted(() => {
     ],
     view: cogSource.getView(),
   });
-});
+}
 
 onActivated(() => {
   attachListeners();
