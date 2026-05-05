@@ -19,7 +19,7 @@
 
     <el-splitter-panel :size="50" :min="10">
       <!-- 递归调用自身 -->
-      <CodeBlockGroup :blocks="blocks.slice(1)" />
+      <CodeBlockGroup :blocks="rest" />
     </el-splitter-panel>
   </el-splitter>
 </template>
@@ -37,6 +37,8 @@ defineProps({
     default: () => [],
   },
 });
+
+const rest = computed(() => props.blocks.slice(1));
 </script>
 
 <style scoped>

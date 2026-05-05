@@ -8,75 +8,70 @@
         <span class="mac-dot green"></span>
       </div>
       <span class="file-name" v-if="fileName">{{ fileName }}</span>
-
-      <!-- 复制按钮：使用 el-button + el-icon -->
-      <el-button
-        v-if="isSupported"
-        class="copy-btn"
-        :type="copied ? 'success' : 'primary'"
-        link
-        @click="copy(rawCode)"
-      >
-        <template #icon>
-          <el-icon>
-            <Check v-if="copied" />
-            <CopyDocument v-else />
-          </el-icon>
-        </template>
-        {{ copied ? "已复制" : "复制" }}
-      </el-button>
+      <div class="copy-btn">
+        <el-button
+          v-if="isSupported"
+          :type="copied ? 'success' : 'primary'"
+          link
+          @click="copy(rawCode)"
+        >
+          <template #icon>
+            <el-icon>
+              <Check v-if="copied" />
+              <CopyDocument v-else />
+            </el-icon>
+          </template>
+          {{ copied ? "已复制" : "复制" }}
+        </el-button>
+      </div>
     </div>
 
-    <!-- 代码包裹容器：负责统一滚动 -->
-    <div class="code-wrapper">
-      <!-- 左侧行号列 -->
-      <div class="line-numbers-col">
-        <span v-for="n in lineCount" :key="n">{{ n }}</span>
+    <!-- 主体区域 -->
+    <div class="code-main-body">
+      <div class="line-numbers-wrapper" ref="lineNumbersRef">
+        <div class="line-numbers-col">
+          <span v-for="n in lineCount" :key="n" v-memo="[lineCount]">{{
+            n
+          }}</span>
+        </div>
       </div>
 
-      <!-- 右侧代码列 -->
-      <pre
-        class="code-content"
-        v-html="`<code class='hljs'>${highlightedCode}</code>`"
-      ></pre>
+      <!-- 右侧代码区 -->
+      <div class="code-scroll-area" @scroll="handleScroll">
+        <pre
+          class="code-content"
+          v-html="`<code class='hljs'>${highlightedCode}</code>`"
+        ></pre>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import { useClipboard } from "@vueuse/core";
 
 const props = defineProps({
-  fileName: {
-    type: String,
-    default: "index.vue",
-  },
-  rawCode: {
-    type: String,
-    required: true,
-  },
-  language: {
-    type: String,
-    default: "html",
-  },
+  fileName: { type: String, default: "index.vue" },
+  rawCode: { type: String, required: true },
+  language: { type: String, default: "html" },
 });
 
-// 1. 复制逻辑
-const { copy, copied, isSupported } = useClipboard({
-  legacy: true,
-});
+const lineNumbersRef = shallowRef(null);
 
-// 2. 行数计算
+const { copy, copied, isSupported } = useClipboard({ legacy: true });
+
+const handleScroll = (e) => {
+  const el = lineNumbersRef.value;
+  if (el) el.scrollTop = e.target.scrollTop;
+};
+
 const lineCount = computed(() => {
   const lines = props.rawCode.split("\n");
-  // 如果最后一行是空的则不计数，保证与编辑器行号一致
   return lines[lines.length - 1] === "" ? lines.length - 1 || 1 : lines.length;
 });
 
-// 3. 高亮渲染
 const highlightedCode = computed(() => {
   try {
     if (props.language && hljs.getLanguage(props.language)) {
@@ -87,46 +82,52 @@ const highlightedCode = computed(() => {
     return props.rawCode;
   }
 });
+
+onUnmounted(() => {
+  lineNumbersRef.value = null;
+});
 </script>
 
 <style scoped lang="scss">
 $code-bg: #1e1e1e;
 $header-bg: #2d2d2d;
 $line-num-color: #5c6370;
+$border-color: #333;
 
 .code-box {
   height: 100%;
-  width: 100%;
   background-color: $code-bg;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   & ::-webkit-scrollbar {
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
   }
+
   & ::-webkit-scrollbar-track {
-    background-color: transparent;
+    background: transparent;
   }
+
   & ::-webkit-scrollbar-thumb {
-    background-color: #444;
-    border-radius: 7px;
-    border: 4px solid $code-bg;
+    background: #444;
+    border-radius: 5px;
+    border: 2px solid $code-bg;
     &:hover {
-      background-color: #555;
+      background: #555;
     }
   }
+
   & ::-webkit-scrollbar-corner {
     background-color: transparent;
   }
 
   .mac-header {
-    height: 30px;
+    height: 32px;
     flex-shrink: 0;
-    background-color: $header-bg;
+    background: $header-bg;
     display: flex;
     align-items: center;
     padding: 0 15px;
@@ -135,89 +136,106 @@ $line-num-color: #5c6370;
 
     .dots {
       display: flex;
-      gap: 8px;
-    }
+      align-items: center;
 
-    .mac-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      &.red {
-        background-color: #ff5f56;
-      }
-      &.yellow {
-        background-color: #ffbd2e;
-      }
-      &.green {
-        background-color: #27c93f;
+      .mac-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+
+        &.red {
+          background: #ff5f56;
+        }
+
+        &.yellow {
+          background: #ffbd2e;
+        }
+
+        &.green {
+          background: #27c93f;
+        }
       }
     }
 
     .file-name {
-      margin-left: 10px;
+      flex: 1;
+      margin-left: 5px;
       color: #858585;
       font-size: 12px;
-      font-family: Consolas, Monaco, monospace;
+      font-family: monospace;
     }
 
     .copy-btn {
       position: absolute;
-      right: 10px;
       top: 50%;
       transform: translateY(-50%);
-      font-family: Consolas, monospace;
-      font-size: 12px;
-      transition: color 0.2s;
-    }
-  }
-
-  /* --- 代码包裹容器 --- */
-  .code-wrapper {
-    flex: 1;
-    display: flex;
-    overflow: auto;
-    min-height: 0;
-    position: relative;
-  }
-
-  /* --- 左侧行号 --- */
-  .line-numbers-col {
-    position: sticky;
-    left: 0;
-    z-index: 5;
-    padding: 15px 0;
-    width: 42px;
-    background-color: $code-bg;
-    display: flex;
-    flex-direction: column;
-    text-align: right;
-    border-right: 1px solid #333;
-    user-select: none;
-
-    span {
+      right: 0;
       padding: 0 10px;
-      color: $line-num-color;
-      font-family: "Consolas", "Courier New", monospace;
-      font-size: 14px;
-      line-height: 1.5;
+      z-index: 10;
+      background-color: $header-bg;
     }
   }
 
-  .code-content {
-    margin: 0;
-    padding: 15px;
+  /* 主体布局 */
+  .code-main-body {
     flex: 1;
-    min-width: 0;
-    overflow: visible;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+    /* 避免多个代码区域时，水平滚动条和分割线区域重叠的问题 */
+    padding-bottom: 10px;
 
-    :deep(code.hljs) {
-      font-family: "Consolas", "Courier New", monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      display: block;
-      background: transparent;
-      padding: 0;
-      overflow: visible;
+    /* 行号外部容器 */
+    .line-numbers-wrapper {
+      flex-shrink: 0;
+      width: 46px;
+      overflow: hidden;
+      background-color: $code-bg;
+      border-right: 1px solid $border-color;
+
+      .line-numbers-col {
+        /* 底部的padding设置的大一点，不管是否有水平滚动条，都不会出现行号和代码不在一条水平线上的情况 */
+        padding: 15px 0 30px 0;
+        display: flex;
+        flex-direction: column;
+        text-align: right;
+        user-select: none;
+
+        span {
+          padding: 0 10px;
+          color: $line-num-color;
+          font-family: Consolas, Monaco, monospace;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+      }
+    }
+    /* 代码滚动区域 */
+    .code-scroll-area {
+      flex: 1;
+      overflow: auto;
+      background-color: $code-bg;
+      min-width: 0;
+
+      .code-content {
+        margin: 0;
+        padding: 15px;
+        /* 确保宽度由最长行决定，触发水平滚动 */
+        width: max-content;
+        min-width: 100%;
+
+        :deep(code.hljs) {
+          font-family: Consolas, Monaco, monospace;
+          font-size: 14px;
+          line-height: 1.5;
+          display: block;
+          background: transparent;
+          padding: 0;
+          white-space: pre; /* 强制不换行 */
+        }
+      }
     }
   }
 }

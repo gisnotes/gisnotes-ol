@@ -1,5 +1,5 @@
 <template>
-  <demo-box :codeBlocks="myCodeList">
+  <demo-box :codeBlocks>
     <div
       class="auto-projection"
       ref="mapDivRef"
@@ -25,7 +25,7 @@ import proj4 from "proj4";
 
 import { MAPTILER_API_KEY } from "@/constants";
 
-const myCodeList = ref([
+const codeBlocks = ref([
   {
     fileName: "@/views/projection/autoProjection/index.vue",
     rawCode: IndexSourceCode,
