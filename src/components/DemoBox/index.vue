@@ -43,6 +43,7 @@ $border-color: #ddd;
 }
 
 .preview-container {
+  position: relative;
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;

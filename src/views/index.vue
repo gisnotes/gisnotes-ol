@@ -39,7 +39,8 @@ const PROJECTION_NODES = [
   {
     id: "projection2",
     topic: "Projection and Scale",
-    status: STATUS.IN_PROGRESS,
+    status: STATUS.DONE,
+    route: "/projection/projectionAndScale",
   },
   {
     id: "projection3",

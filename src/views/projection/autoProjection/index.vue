@@ -146,6 +146,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .auto-projection {
-  height: 100%;
+  position: absolute;
+  inset: 0;
 }
 </style>

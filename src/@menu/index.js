@@ -18,6 +18,13 @@ export const LOCAL_ROUTES = [
         hidden: false,
         meta: { title: "自动投影查询", icon: "projection", roles: ["admin"] },
       },
+      {
+        path: "projectionAndScale",
+        component: "projection/projectionAndScale/index",
+        name: "ProjectionAndScale",
+        hidden: false,
+        meta: { title: "投影与比例", icon: "projection", roles: ["admin"] },
+      },
     ],
   },
 ];
