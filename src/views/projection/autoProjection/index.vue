@@ -20,10 +20,8 @@ import View from "ol/View.js";
 import { unByKey } from "ol/Observable.js";
 import WebGLTileLayer from "ol/layer/WebGLTile.js";
 import "ol/ol.css";
-import { register } from "ol/proj/proj4.js";
 import GeoTIFF from "ol/source/GeoTIFF.js";
 import XYZ from "ol/source/XYZ.js";
-import proj4 from "proj4";
 
 import { MAPTILER_API_KEY } from "@/constants";
 
@@ -48,12 +46,19 @@ const isLoading = computed(() => loadingTilesCount.value > 0);
 
 let listenerKeys = [];
 
-register(proj4);
+const isDev = import.meta.env.DEV;
 
+/**
+ * 利用 jsDelivr 加速 GitHub 上的静态资源,
+ * 本地开发时使用本地路径, 线上 build 后使用 CDN 路径
+ */
+const cogUrl = isDev
+  ? "/data/linzhou_cog.tif"
+  : "https://cdn.jsdelivr.net/gh/gisnotes/gisnotes-ol@main/public/data/linzhou_cog.tif";
 const cogSource = new GeoTIFF({
   sources: [
     {
-      url: "/data/linzhou_cog.tif",
+      url: cogUrl,
       nodata: 0,
     },
   ],

@@ -42,6 +42,9 @@ export default class Tianditu {
   createTileLayer(type) {
     return new TileLayer({
       source: this.createXYZSource(type),
+      properties: {
+        name: type,
+      },
     });
   }
 
