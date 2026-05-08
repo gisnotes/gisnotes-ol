@@ -26,6 +26,7 @@
 <script setup name="ProjectionAndScale">
 import DemoBox from "@/components/DemoBox/index.vue";
 import IndexSourceCode from "./index.vue?raw";
+import TiandituUtilCode from "@/utils/layer/tdt.js?raw";
 
 import Map from "ol/Map.js";
 import View from "ol/View.js";
@@ -37,7 +38,7 @@ import {
   transform,
 } from "ol/proj.js";
 import "ol/ol.css";
-import { useResizeObserver } from "@vueuse/core";
+import { useResizeObserver, useDebounceFn } from "@vueuse/core";
 
 import Tianditu from "@/utils/layer/tdt.js";
 
@@ -46,6 +47,11 @@ const codeBlocks = ref([
     fileName: "@/views/projection/projectionAndScale/index.vue",
     rawCode: IndexSourceCode,
     language: "html",
+  },
+  {
+    fileName: "@/utils/layer/tdt.js",
+    rawCode: TiandituUtilCode,
+    language: "js",
   },
 ]);
 
@@ -90,15 +96,26 @@ function initMap() {
     layers: [vecLyrGrp],
     target: mapDivRef.value,
     view: new View({
-      center: transform([0, 52], "EPSG:4326", projection),
-      zoom: 6,
+      center: transform([113.626373, 34.748782], "EPSG:4326", projection),
+      zoom: 8,
       projection: projection,
     }),
   });
 
-  useResizeObserver(mapDivRef, () => {
-    map.updateSize();
-  });
+  /**
+   * 增加防抖避免频繁触发updateSize函数的执行，
+   * 实现的效果是：拽改变窗口大小时，地图不会卡顿地一帧帧重绘，
+   * 而是会在你停下拖拽的一瞬间刷新地图尺寸，性能和体验都能兼顾得到
+   */
+  const debouncedUpdateSize = useDebounceFn(() => {
+    if (map) {
+      console.log("刷新地图尺寸");
+      map.updateSize();
+    }
+  }, 300);
+
+  // 监听容器大小变化
+  useResizeObserver(mapDivRef, debouncedUpdateSize);
 }
 
 function onChangeProjection() {
@@ -118,10 +135,8 @@ function onChangeProjection() {
    */
   const currentMPU = currentProjection.getMetersPerUnit();
   const newMPU = newProjection.getMetersPerUnit();
-  /* 4. 计算新分辨率（像素代表多少地图单位）：
-   *  - 新分辨率 = 旧分辨率 * 旧点分辨率 / 新点分辨率
-   *  - 其中，旧点分辨率 = 旧投影下的点分辨率（1米 = 1像素）
-   *  - 新点分辨率 = 新投影下的点分辨率（1度 = 1像素）
+  /* 4. 计算新分辨率（1 像素代表多少新地图单位）：
+   *  - 新分辨率 = 旧分辨率 * 旧的点分辨率 / 新的点分辨率
    */
   const currentPointResolution =
     getPointResolution(currentProjection, 1 / currentMPU, currentCenter, "m") *
@@ -156,9 +171,7 @@ function onChangeProjection() {
     z-index: 2;
     padding: 10px;
     opacity: 0.96;
-    box-shadow:
-      rgba(195, 191, 188, 0.7) 0px 1px 2px 0px,
-      rgba(195, 191, 188, 0.85) 0px 2px 4px 2px;
+    box-shadow: var(--el-box-shadow-dark);
   }
 }
 
