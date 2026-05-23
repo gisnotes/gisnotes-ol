@@ -25,6 +25,17 @@ export const LOCAL_ROUTES = [
         hidden: false,
         meta: { title: "投影与比例", icon: "projection", roles: ["admin"] },
       },
+      {
+        path: "wmsNoProjection",
+        component: "projection/wmsNoProjection/index",
+        name: "WmsNoProjection",
+        hidden: false,
+        meta: {
+          title: "无投影WMS服务的加载",
+          icon: "projection",
+          roles: ["admin"],
+        },
+      },
     ],
   },
 ];

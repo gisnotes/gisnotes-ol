@@ -111,7 +111,7 @@ onUnmounted(() => {
     border-radius: 8px;
     padding: 12px 16px;
     box-shadow: var(--el-box-shadow-dark);
-    z-index: 100;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: 12px;

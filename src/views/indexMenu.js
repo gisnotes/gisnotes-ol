@@ -44,12 +44,21 @@ const PROJECTION_NODES = [
   {
     id: "projection3",
     topic: "WMS without Projection",
-    status: STATUS.IN_PROGRESS,
+    status: STATUS.DONE,
+    route: "/projection/wmsNoProjection",
+    children: [
+      {
+        id: "projection3-1",
+        topic: "Openlayers 之无投影 WMS 服务的加载",
+        status: STATUS.DONE,
+        externalLink: "https://mp.weixin.qq.com/s/krA_ppqU7v4murN34keBnw",
+      },
+    ],
   },
   {
     id: "projection4",
     topic: "Equal Earth projection with dynamic center meridian",
-    status: STATUS.PENDING,
+    status: STATUS.IN_PROGRESS,
   },
   {
     id: "projection5",
