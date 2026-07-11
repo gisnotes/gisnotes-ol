@@ -58,7 +58,8 @@ const PROJECTION_NODES = [
   {
     id: "projection4",
     topic: "Equal Earth projection with dynamic center meridian",
-    status: STATUS.IN_PROGRESS,
+    status: STATUS.DONE,
+    route: "/projection/equalEarthProjection",
   },
   {
     id: "projection5",

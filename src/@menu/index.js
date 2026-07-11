@@ -36,6 +36,17 @@ export const LOCAL_ROUTES = [
           roles: ["admin"],
         },
       },
+      {
+        path: "equalEarthProjection",
+        component: "projection/equalEarthProjection/index",
+        name: "EqualEarthProjection",
+        hidden: false,
+        meta: {
+          title: "等面积投影",
+          icon: "projection",
+          roles: ["admin"],
+        },
+      },
     ],
   },
 ];

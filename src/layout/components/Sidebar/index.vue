@@ -12,6 +12,7 @@
         :collapse-transition="false"
         mode="vertical"
         :class="sideTheme"
+        router
       >
         <sidebar-item
           v-for="(route, index) in sidebarRouters"
